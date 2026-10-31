@@ -23,6 +23,7 @@ Singleton {
     property Component geminiApiStrategy: GeminiApiStrategy {}
     property Component openaiApiStrategy: OpenAiApiStrategy {}
     property Component mistralApiStrategy: MistralApiStrategy {}
+    property Component ariaApiStrategy: AriaApiStrategy {}
     readonly property string interfaceRole: "interface"
     readonly property string apiKeyEnvVarName: "API_KEY"
 
@@ -233,7 +234,8 @@ Singleton {
             ],
             "search": [],
             "none": [],
-        }
+        },
+        "aria": { "none": [] }, // Aria brings its own tools
     }
     property list<var> availableTools: Object.keys(root.tools[models[currentModelId]?.api_format])
     property var toolDescriptions: {
@@ -302,6 +304,7 @@ Singleton {
         "openai": openaiApiStrategy.createObject(this),
         "gemini": geminiApiStrategy.createObject(this),
         "mistral": mistralApiStrategy.createObject(this),
+        "aria": ariaApiStrategy.createObject(this, { "ai": root }),
     }
     property ApiStrategy currentApiStrategy: apiStrategies[models[currentModelId]?.api_format || "openai"]
 
@@ -760,12 +763,14 @@ Singleton {
     }
 
     function rejectCommand(message: AiMessageData) {
+        if (requester.currentStrategy?.decideFunctionCall(message, false)) return;
         if (!message.functionPending) return;
         message.functionPending = false; // User decided, no more "thinking"
         addFunctionOutputMessage(message.functionName, Translation.tr("Command rejected by user"))
     }
 
     function approveCommand(message: AiMessageData) {
+        if (requester.currentStrategy?.decideFunctionCall(message, true)) return;
         if (!message.functionPending) return;
         message.functionPending = false; // User decided, no more "thinking"
 
@@ -801,6 +806,7 @@ Singleton {
     }
 
     function handleFunctionCall(name, args: var, message: AiMessageData) {
+        if (requester.currentStrategy?.handleFunctionCall(name, args, message)) return;
         if (name === "switch_to_search_mode") {
             const modelId = root.currentModelId;
             root.currentTool = "search"
