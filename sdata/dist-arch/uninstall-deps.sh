@@ -2,5 +2,5 @@
 # It's not for directly running.
 
 for i in illogical-impulse-{quickshell-git,audio,backlight,basic,bibata-modern-classic-bin,fonts-themes,hyprland,kde,microtex-git,portal,python,screencapture,toolkit,widgets} plasma-browser-integration; do
-  v yay -Rns $i
+  v sudo pacman -Rns $i
 done
