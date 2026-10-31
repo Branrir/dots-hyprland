@@ -11,4 +11,6 @@ QtObject {
     function finalizeScriptContent(scriptContent: string): string { return scriptContent } // Optionally modify/finalize script
     function handleFunctionCall(name, args, message): bool { return false } // Return true to handle a function call in the strategy
     function decideFunctionCall(message, approved: bool): bool { return false } // Return true to handle approve/reject in the strategy
+    property var commands: [] // Extra chat commands while this strategy's model is selected, same shape as AiChat.allCommands
+    function suggestions(text: string, commandPrefix: string): var { return null } // Suggestion list for the input, or null to use the built-in ones
 }
