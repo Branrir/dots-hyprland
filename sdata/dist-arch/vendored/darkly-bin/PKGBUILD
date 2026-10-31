@@ -1,0 +1,32 @@
+# Vendored from AUR darkly-bin 0.5.42-1 (maintainer DeltaCopy), reviewed: it
+# repackages the precompiled Arch package Darkly's author publishes, pinned by
+# sha256; the asset carries no .INSTALL script. Only Qt6/KF6 dependencies.
+
+pkgname=darkly-bin
+pkgver=0.5.42
+pkgrel=1
+pkgdesc="Fork of Lightly (A modern style for Qt applications)"
+url="https://github.com/Bali10050/darkly"
+arch=('x86_64')
+license=("GPL-2.0-or-later")
+options=(!emptydirs !debug)
+depends=(
+  'kdecoration'
+  'qt6-declarative'
+  'kcoreaddons'
+  'kcmutils'
+  'kcolorscheme'
+  'kconfig'
+  'kguiaddons'
+  'kiconthemes'
+  'kwindowsystem'
+  'frameworkintegration'
+  'libplasma'
+)
+conflicts=('darkly')
+source=("${url}/releases/download/v${pkgver}/darkly-${pkgver}-x86_64.pkg.zst")
+sha256sums=('088836831092eed0e8b688c62d35027f3fa44a760d8714457c33905f9d5032cd')
+
+package() {
+  cp -R "${srcdir}/usr/" "${pkgdir}/usr"
+}

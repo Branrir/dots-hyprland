@@ -1,0 +1,35 @@
+# Readex Pro, from the designer's repository at a pinned commit (it has no
+# releases). Static TTFs, as the shell's "reading" font expects.
+
+pkgname=ttf-readex-pro
+pkgver=1.205
+pkgrel=1
+_commit=563dfbb36ae45e52ec50829b016ce724ac2fca70
+pkgdesc="Readex Pro, world-script expansion of the Lexend font family"
+url="https://github.com/ThomasJockin/readexpro"
+arch=('any')
+license=('OFL-1.1')
+_raw="https://raw.githubusercontent.com/ThomasJockin/readexpro/${_commit}"
+source=(
+  "${_raw}/fonts/ttf/ReadexPro-ExtraLight.ttf"
+  "${_raw}/fonts/ttf/ReadexPro-Light.ttf"
+  "${_raw}/fonts/ttf/ReadexPro-Regular.ttf"
+  "${_raw}/fonts/ttf/ReadexPro-Medium.ttf"
+  "${_raw}/fonts/ttf/ReadexPro-SemiBold.ttf"
+  "${_raw}/fonts/ttf/ReadexPro-bold.ttf"
+  "${_raw}/OFL.txt"
+)
+sha256sums=(
+  'bb4246c9e4357d8f5f4f3e1625fee1d6ce74d8505cf0714a360c8a57dcb12165'
+  '31eda1299e808f744898340bdf54557053188f7f0c737f8d9df945bdea1f2109'
+  '0cd21fac7049bc6e2750281dc9991698ef519d14939a940d8bc0c1f883c9e806'
+  'e8e5143990d521b6fcef8e1f467f5720b26c9c1b263d250f8e5c5db4721dedbb'
+  '94db0bf2752c30ea693e8a637c711b0b479cffa642ea12ae9d1c0262cc831b70'
+  '4c0a4b10b790d895f2a9995d0842599e0150fe1f8621857eb75c971a0bec6044'
+  'b41267a3903a45955f77b44596e080480c577fb7221df59672d0bc8cd8cd4b6f'
+)
+
+package() {
+  install -Dm644 -t "${pkgdir}/usr/share/fonts/ttf-readex-pro" ReadexPro-*.ttf
+  install -Dm644 -t "${pkgdir}/usr/share/licenses/${pkgname}" OFL.txt
+}

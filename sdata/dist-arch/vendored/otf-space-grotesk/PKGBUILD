@@ -1,0 +1,20 @@
+# Space Grotesk, straight from the designer's release.
+
+pkgname=otf-space-grotesk
+pkgver=2.0.0
+pkgrel=1
+pkgdesc="Space Grotesk, a proportional sans-serif typeface (OTF)"
+url="https://github.com/floriankarsten/space-grotesk"
+arch=('any')
+license=('OFL-1.1')
+source=("SpaceGrotesk-${pkgver}.zip::${url}/releases/download/${pkgver}/SpaceGrotesk-${pkgver}.zip")
+sha256sums=('53b415577d4139248555300710bea0d268c7a5be67b93de53b716a9736cabffd')
+
+package() {
+  cd "SpaceGrotesk-${pkgver}"
+  install -Dm644 -t "${pkgdir}/usr/share/fonts/OTF" otf/*.otf
+  # The static OTFs stop at Light/Regular/Medium/Bold; the variable font covers
+  # every weight in between (SemiBold included, which the 1.x OTFs had).
+  install -Dm644 -t "${pkgdir}/usr/share/fonts/TTF" "ttf/SpaceGrotesk[wght].ttf"
+  install -Dm644 -t "${pkgdir}/usr/share/licenses/${pkgname}" OFL.txt
+}

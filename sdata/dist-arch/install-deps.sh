@@ -19,7 +19,16 @@ remove_deprecated_dependencies(){
   list+=(hyprland-qtutils)
   list+=({quickshell,hyprutils,hyprpicker,hyprlang,hypridle,hyprland-qt-support,hyprland-qtutils,hyprlock,xdg-desktop-portal-hyprland,hyprcursor,hyprwayland-scanner,hyprland}-git)
   list+=(matugen-bin)
+  # Fork (custom branch): AUR/chaotic-aur packages replaced by official ones or
+  # dropped as unused (official: adw-gtk-theme, ttf-material-symbols-variable).
+  list+=(adw-gtk-theme-git ttf-material-symbols-variable-git breeze-plus ttf-rubik-vf ttf-twemoji)
   for i in ${list[@]};do try sudo pacman --noconfirm -Rdd $i;done
+  # The old illogical-impulse-quickshell-git built quickshell itself and
+  # conflicts with the official package that replaces it; it is rebuilt below
+  # as a dependency-only package.
+  if pacman -Qi illogical-impulse-quickshell-git 2>/dev/null | grep -q '^Provides *:.*quickshell'; then
+    try sudo pacman --noconfirm -Rdd illogical-impulse-quickshell-git
+  fi
 }
 # NOTE: `implicitize_old_dependencies()` was for the old days when we just switch from dependencies.conf to local PKGBUILDs.
 # However, let's just keep it as references for other distros writing their `sdata/dist-<OS_GROUP_ID>/install-deps.sh`, if they need it.
@@ -32,7 +41,7 @@ implicitize_old_dependencies(){
 
   echo "Attempting to set previously explicitly installed deps as implicit..."
   for i in "${explicitly_installed[@]}"; do for j in "${old_deps_list[@]}"; do
-    [ "$i" = "$j" ] && yay -D --asdeps "$i"
+    [ "$i" = "$j" ] && sudo pacman -D --asdeps "$i"
   done; done
 
   return 0
@@ -58,13 +67,9 @@ case $SKIP_SYSUPDATE in
   *) v sudo pacman -Syu;;
 esac
 
-# Use yay. Because paru does not support cleanbuild.
-# Also see https://wiki.hyprland.org/FAQ/#how-do-i-update
-if ! command -v yay >/dev/null 2>&1;then
-  echo -e "${STY_YELLOW}[$0]: \"yay\" not found.${STY_RST}"
-  showfun install-yay
-  v install-yay
-fi
+# Fork (custom branch): no AUR helper. Everything comes from the official repos
+# through pacman, plus the reviewed PKGBUILDs in sdata/dist-arch/vendored/; a
+# dependency no repo has fails the install instead of quietly coming from the AUR.
 
 showfun implicitize_old_dependencies
 v implicitize_old_dependencies
@@ -78,7 +83,7 @@ install-local-pkgbuild() {
   x pushd $location
 
   source ./PKGBUILD
-  x yay -S --sudoloop $installflags --asdeps "${depends[@]}"
+  x sudo pacman -S $installflags --asdeps "${depends[@]}"
   # man makepkg:
   # -A, --ignorearch: Ignore a missing or incomplete arch field in the build script.
   # -s, --syncdeps: Install missing dependencies using pacman. When build-time or run-time dependencies are not found, pacman will try to resolve them.
@@ -88,6 +93,16 @@ install-local-pkgbuild() {
   x makepkg -Afsi --noconfirm
   x popd
 }
+
+# Fork (custom branch): the packages no official repo ships, built from the
+# reviewed PKGBUILDs in vendored/ (see its README) before the meta packages
+# that depend on them. makepkg needs base-devel, which installing yay used to pull in.
+x sudo pacman -S --needed --noconfirm base-devel
+for i in ./sdata/dist-arch/vendored/*/; do
+  x pushd "$i"
+  x makepkg -Afsi --asdeps --needed --noconfirm
+  x popd
+done
 
 # Install core dependencies from the meta-packages
 metapkgs=(./sdata/dist-arch/illogical-impulse-{audio,backlight,basic,fonts-themes,kde,portal,python,screencapture,toolkit,widgets})
