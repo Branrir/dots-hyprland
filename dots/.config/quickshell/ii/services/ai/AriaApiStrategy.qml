@@ -105,6 +105,11 @@ ApiStrategy {
             description: "Continue an Aria conversation (type to search them)",
             execute: args => root.switchSession(args.join(" ").trim())
         },
+        {
+            name: "new",
+            description: "Start a new Aria conversation",
+            execute: () => root.startNewSession()
+        },
     ]
 
     function newSessionId() { // Same shape as the ids Aria mints itself
@@ -324,6 +329,14 @@ ApiStrategy {
         root.sessionId = sessionId;
         root.lastSentMessage = null;
         refreshSessions();
+    }
+
+    // `/new`: clear the chat; the next message mints a fresh session id (see buildRequestData)
+    function startNewSession() {
+        root.ai.clearMessages();
+        root.sessionId = "";
+        root.lastSentMessage = null;
+        root.ai.addMessage("New Aria conversation", root.ai.interfaceRole);
     }
 
     function reset() {
