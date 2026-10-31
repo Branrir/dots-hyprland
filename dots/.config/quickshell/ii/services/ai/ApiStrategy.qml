@@ -9,4 +9,6 @@ QtObject {
     function reset() { } // Reset any internal state if needed
     function buildScriptFileSetup(filePath) { return "" } // Default: no setup
     function finalizeScriptContent(scriptContent: string): string { return scriptContent } // Optionally modify/finalize script
+    function handleFunctionCall(name, args, message): bool { return false } // Return true to handle a function call in the strategy
+    function decideFunctionCall(message, approved: bool): bool { return false } // Return true to handle approve/reject in the strategy
 }
