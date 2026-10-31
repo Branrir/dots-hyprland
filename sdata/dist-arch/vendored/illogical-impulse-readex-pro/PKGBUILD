@@ -1,7 +1,10 @@
 # Readex Pro, from the designer's repository at a pinned commit (it has no
 # releases). Static TTFs, as the shell's "reading" font expects.
 
-pkgname=ttf-readex-pro
+# Named after illogical-impulse, not the AUR/chaotic-aur package it replaces: a
+# repo package with the same name and a higher version would otherwise replace
+# this reviewed one on the next pacman -Syu.
+pkgname=illogical-impulse-readex-pro
 pkgver=1.205
 pkgrel=1
 _commit=563dfbb36ae45e52ec50829b016ce724ac2fca70
@@ -9,6 +12,8 @@ pkgdesc="Readex Pro, world-script expansion of the Lexend font family"
 url="https://github.com/ThomasJockin/readexpro"
 arch=('any')
 license=('OFL-1.1')
+provides=('ttf-readex-pro')
+conflicts=('ttf-readex-pro')
 _raw="https://raw.githubusercontent.com/ThomasJockin/readexpro/${_commit}"
 source=(
   "${_raw}/fonts/ttf/ReadexPro-ExtraLight.ttf"

@@ -2,7 +2,10 @@
 # repackages the precompiled Arch package Darkly's author publishes, pinned by
 # sha256; the asset carries no .INSTALL script. Only Qt6/KF6 dependencies.
 
-pkgname=darkly-bin
+# Named after illogical-impulse, not the AUR/chaotic-aur package it replaces: a
+# repo package with the same name and a higher version would otherwise replace
+# this reviewed one on the next pacman -Syu.
+pkgname=illogical-impulse-darkly
 pkgver=0.5.42
 pkgrel=1
 pkgdesc="Fork of Lightly (A modern style for Qt applications)"
@@ -23,7 +26,8 @@ depends=(
   'frameworkintegration'
   'libplasma'
 )
-conflicts=('darkly')
+provides=('darkly' 'darkly-bin')
+conflicts=('darkly' 'darkly-bin' 'darkly-qt6' 'darkly-qt6-git')
 source=("${url}/releases/download/v${pkgver}/darkly-${pkgver}-x86_64.pkg.zst")
 sha256sums=('088836831092eed0e8b688c62d35027f3fa44a760d8714457c33905f9d5032cd')
 
