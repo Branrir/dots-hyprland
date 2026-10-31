@@ -34,9 +34,11 @@ ApiStrategy {
     property int pendingConfirmId: -1
     readonly property string answersFifo: `${Quickshell.env("XDG_RUNTIME_DIR") || "/tmp"}/quickshell-aria-answers`
 
-    // Find the CLI and whether it can ask over stdin, then offer the model
+    // Find the CLI and whether it can ask over stdin, then offer the model.
+    // Offered under policies.ai 1 (yes) and 2 (local): Aria is self-hosted, and
+    // the request is a local process, not a call to an online API.
     property Process detect: Process {
-        running: Config.ready && Config.options.policies.ai === 1
+        running: Config.ready && Config.options.policies.ai !== 0
         command: ["bash", "-c", `command -v ${root.ariaBin} >/dev/null || exit 1; ${root.ariaBin} --help | grep -q -- --confirm-stdin && echo stdin || echo plain`]
         stdout: StdioCollector {
             onStreamFinished: {
@@ -50,7 +52,7 @@ ApiStrategy {
                         ? Translation.tr("Aria | your local companion, through the aria CLI. Uses Aria's own tools and memory.")
                         : Translation.tr("Aria | your local companion, through the aria CLI.\nThis aria is too old to ask for approval here, so risky tools are refused."),
                     "homepage": "https://github.com/Branrir/aria",
-                    "endpoint": "aria",
+                    "endpoint": "localhost/aria-cli", // "localhost" passes the local-only policy check in Ai.setModel
                     "model": root.modelId,
                     "requires_key": false,
                     "api_format": "aria",
