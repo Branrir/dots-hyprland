@@ -364,6 +364,14 @@ Inline w/ backslash and round brackets \\(e^{i\\pi} + 1 = 0\\)
                 mouseScrollFactor: Config.options.interactions.scrolling.mouseScrollFactor * 1.4
 
                 property int lastResponseLength: 0
+                // Follow the newest message while the view is at the bottom; scrolling up stops it.
+                // Decided on scroll, not on growth: once content has grown the view is no longer atYEnd.
+                property bool followEnd: true
+                Connections {
+                    target: messageListView
+                    function onContentYChanged() { messageListView.followEnd = messageListView.atYEnd }
+                    function onContentHeightChanged() { if (messageListView.followEnd) Qt.callLater(messageListView.positionViewAtEnd) }
+                }
                 // onContentHeightChanged: {
                 //     if (atYEnd)
                 //         Qt.callLater(positionViewAtEnd);
