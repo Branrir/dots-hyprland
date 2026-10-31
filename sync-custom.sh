@@ -4,12 +4,31 @@
 #
 #   1. fork main  <- upstream main   (fast-forward only: main carries nothing of ours)
 #   2. rebase this branch onto it, and force-push it (with lease)
-#   3. ./setup exp-update            (its `git pull --ff-only` is then a no-op)
+#   3. ./setup install-deps          (pacman -Syu, then the dots' packages: official
+#                                     repos + sdata/dist-arch/vendored/, no AUR)
+#   4. ./setup exp-update            (the dotfiles; its `git pull --ff-only` is a no-op)
+#
+# Options:
+#   --no-deps        skip step 3
+#   --no-sysupdate   step 3 without its pacman -Syu
+#   --no-update      stop after step 2
 #
 # Run it from the installer clone (~/.cache/dots-hyprland) on the custom branch.
 # A rebase conflict stops here: resolve it, `git rebase --continue`, run again.
 set -euo pipefail
 cd "$(dirname "$0")"
+
+deps=true
+sysupdate=true
+update=true
+for arg in "$@"; do
+  case "$arg" in
+    --no-deps) deps=false ;;
+    --no-sysupdate) sysupdate=false ;;
+    --no-update) update=false ;;
+    *) echo "sync-custom: unknown option: $arg" >&2; exit 1 ;;
+  esac
+done
 
 branch=$(git branch --show-current)
 if [[ -z "$branch" || "$branch" == main ]]; then
@@ -28,8 +47,12 @@ git push origin upstream/main:refs/heads/main
 git rebase upstream/main
 git push --force-with-lease origin "$branch"
 
-if [[ "${1:-}" == --no-update ]]; then
-  echo "sync-custom: synced; skipping ./setup exp-update"
-else
-  ./setup exp-update
+if ! $update; then
+  echo "sync-custom: synced; skipping the package and dotfile update"
+  exit 0
 fi
+
+if $deps; then
+  if $sysupdate; then ./setup install-deps; else ./setup install-deps --skip-sysupdate; fi
+fi
+./setup exp-update
