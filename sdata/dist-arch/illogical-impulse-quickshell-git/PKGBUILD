@@ -14,7 +14,7 @@ _pkgname=quickshell
 _quickshell_min=0.3.2
 pkgname="$_prefix-$_pkgname-git"
 pkgver=0.1.0.r1
-pkgrel=9
+pkgrel=10
 pkgdesc="Official $_pkgname plus the extra deps of $_prefix"
 arch=(any)
 url='https://git.outfoxxed.me/quickshell/quickshell'
@@ -23,7 +23,7 @@ depends=(
   "quickshell>=$_quickshell_min"
   # NOTE: Below are custom dependencies of illogical-impulse
   qt6-5compat
-  qt6-avif-image-plugin
+  kimageformats  # official AVIF/HEIF/JXL readers; replaces qt6-avif-image-plugin (AUR)
   qt6-imageformats
   qt6-multimedia
   qt6-positioning

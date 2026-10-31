@@ -22,6 +22,7 @@ remove_deprecated_dependencies(){
   # Fork (custom branch): AUR/chaotic-aur packages replaced by official ones or
   # dropped as unused (official: adw-gtk-theme, ttf-material-symbols-variable).
   list+=(adw-gtk-theme-git ttf-material-symbols-variable-git breeze-plus ttf-rubik-vf ttf-twemoji)
+  list+=(qt6-avif-image-plugin)  # kimageformats (official) reads AVIF
   for i in ${list[@]};do try sudo pacman --noconfirm -Rdd $i;done
   # The old illogical-impulse-quickshell-git built quickshell itself and
   # conflicts with the official package that replaces it; it is rebuilt below
