@@ -49,8 +49,8 @@ ApiStrategy {
                     "name": "Aria",
                     "icon": "ollama-symbolic",
                     "description": root.supportsConfirmStdin
-                        ? Translation.tr("Aria | your local companion, through the aria CLI. Uses Aria's own tools and memory.")
-                        : Translation.tr("Aria | your local companion, through the aria CLI.\nThis aria is too old to ask for approval here, so risky tools are refused."),
+                        ? "Aria | your local companion, through the aria CLI. Uses Aria's own tools and memory."
+                        : "Aria | your local companion, through the aria CLI.\nThis aria is too old to ask for approval here, so risky tools are refused.",
                     "homepage": "https://github.com/Branrir/aria",
                     "endpoint": "localhost/aria-cli", // "localhost" passes the local-only policy check in Ai.setModel
                     "model": root.modelId,
@@ -159,7 +159,7 @@ ApiStrategy {
             break;
         case "canceled":
             endReasoning(message);
-            append(message, `\n\n*${Translation.tr("Canceled")}*`);
+            append(message, "\n\n*Canceled*");
             break;
         case "context":
             return { tokenUsage: { input: event.used ?? -1, output: event.out ?? -1, total: (event.used ?? 0) + (event.out ?? 0) } };
@@ -168,7 +168,7 @@ ApiStrategy {
             return { functionCall: { name: "aria_confirm", args: { id: event.id, tool: event.tool, what: event.what } } };
         case "confirm_expired":
             if (root.pendingMessage === message && event.id === root.pendingConfirmId) {
-                settle(message, event.reason === "canceled" ? Translation.tr("Canceled, declined") : Translation.tr("No answer in time, declined"));
+                settle(message, event.reason === "canceled" ? "Canceled, declined" : "No answer in time, declined");
             }
             break;
         }
@@ -179,7 +179,7 @@ ApiStrategy {
     function handleFunctionCall(name, args, message): bool {
         if (name !== "aria_confirm") return false;
         const what = String(args.what).replace(/```/g, "` ` `");
-        append(message, `\n\n**${Translation.tr("Aria wants to use %1").arg(args.tool)}**\n\n\`\`\`command\n${what}\n\`\`\`\n\n`);
+        append(message, `\n\n**Aria wants to use ${args.tool}**\n\n\`\`\`command\n${what}\n\`\`\`\n\n`);
         root.pendingMessage = message;
         root.pendingConfirmId = args.id;
         message.functionPending = true;
@@ -193,7 +193,7 @@ ApiStrategy {
         const answer = JSON.stringify({ id: root.pendingConfirmId, approve: approved });
         answerWriter.command = ["timeout", "2", "bash", "-c", 'printf "%s\\n" "$1" > "$2"', "_", answer, root.answersFifo];
         answerWriter.running = true;
-        settle(message, approved ? Translation.tr("Approved") : Translation.tr("Declined"));
+        settle(message, approved ? "Approved" : "Declined");
         return true;
     }
 
@@ -210,7 +210,7 @@ ApiStrategy {
 
     function onRequestFinished(message) {
         endReasoning(message);
-        if (root.pendingMessage === message) settle(message, Translation.tr("Turn ended before an answer"));
+        if (root.pendingMessage === message) settle(message, "Turn ended before an answer");
         return {};
     }
 
