@@ -23,6 +23,9 @@ remove_deprecated_dependencies(){
   # dropped as unused (official: adw-gtk-theme, ttf-material-symbols-variable).
   list+=(adw-gtk-theme-git ttf-material-symbols-variable-git breeze-plus ttf-rubik-vf ttf-twemoji)
   list+=(qt6-avif-image-plugin)  # kimageformats (official) reads AVIF
+  # Same-named AUR/chaotic-aur builds of what vendored/ now provides under
+  # illogical-impulse-* names (removing by these names never touches ours).
+  list+=(darkly-bin otf-space-grotesk ttf-readex-pro)
   for i in ${list[@]};do try sudo pacman --noconfirm -Rdd $i;done
   # The old illogical-impulse-quickshell-git built quickshell itself and
   # conflicts with the official package that replaces it; it is rebuilt below
@@ -84,7 +87,20 @@ install-local-pkgbuild() {
   x pushd $location
 
   source ./PKGBUILD
-  x sudo pacman -S $installflags --asdeps "${depends[@]}"
+  # Only the missing ones: pacman -S knows nothing of the vendored packages, and
+  # for a name chaotic-aur also carries it would swap ours for the AUR build.
+  local -a missing=()
+  mapfile -t missing < <(pacman -T "${depends[@]}")
+  if (( ${#missing[@]} > 0 )); then
+    # chaotic-aur builds AUR PKGBUILDs; refuse rather than install from it.
+    local from_aur
+    from_aur=$(pacman -Sp --print-format '%r %n' "${missing[@]}" 2>/dev/null | awk '$1=="chaotic-aur"{print $2}')
+    if [[ -n "$from_aur" ]]; then
+      printf "${STY_RED}[$0]: only chaotic-aur (AUR builds) has: %s. Add an official package or a vendored PKGBUILD instead.${STY_RST}\n" "$(echo $from_aur)"
+      x false
+    fi
+    x sudo pacman -S $installflags --asdeps "${missing[@]}"
+  fi
   # man makepkg:
   # -A, --ignorearch: Ignore a missing or incomplete arch field in the build script.
   # -s, --syncdeps: Install missing dependencies using pacman. When build-time or run-time dependencies are not found, pacman will try to resolve them.

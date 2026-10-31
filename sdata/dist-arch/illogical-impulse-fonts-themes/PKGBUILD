@@ -1,22 +1,22 @@
 groups=(illogical-impulse)
 pkgname=illogical-impulse-fonts-themes
 pkgver=1.0
-pkgrel=7
+pkgrel=8
 pkgdesc='Illogical Impulse Fonts and Theming Dependencies'
 arch=(any)
 license=(None)
 depends=(
   adw-gtk-theme  # official; was adw-gtk-theme-git (AUR)
   breeze
-  darkly-bin  # vendored/
+  illogical-impulse-darkly  # vendored/
   eza
   fish
   fontconfig
   kitty
   matugen
-  otf-space-grotesk  # vendored/
+  illogical-impulse-space-grotesk  # vendored/
   starship
   ttf-jetbrains-mono-nerd
   ttf-material-symbols-variable  # official; was the -git package (AUR)
-  ttf-readex-pro  # vendored/
+  illogical-impulse-readex-pro  # vendored/
 )
