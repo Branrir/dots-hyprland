@@ -1,0 +1,7 @@
+# makepkg leaves sources, src/, pkg/ and built packages next to each PKGBUILD.
+# Track only the PKGBUILDs and this folder's own files.
+*
+!*/
+!PKGBUILD
+!README.md
+!.gitignore
