@@ -93,7 +93,7 @@ ApiStrategy {
     property Process historyLoader: Process {
         property string sessionId
         property string title
-        command: [root.ariaBin, "--json", "-s", sessionId, "/history"]
+        command: [root.ariaBin, "--json", "/session", sessionId]
         stdout: StdioCollector {
             onStreamFinished: root.showHistory(root.historyLoader.sessionId, root.historyLoader.title, root.findEvent(text, "history"))
         }
