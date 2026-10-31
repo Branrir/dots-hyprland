@@ -195,7 +195,7 @@ Inline w/ backslash and round brackets \\(e^{i\\pi} + 1 = 0\\)
 `, Ai.interfaceRole);
             }
         },
-    ]
+    ].concat(Ai.currentApiStrategy?.commands ?? []) // Plus the selected model's own commands
 
     function handleInput(inputText) {
         if (inputText.startsWith(root.commandPrefix)) {
@@ -523,10 +523,13 @@ Inline w/ backslash and round brackets \\(e^{i\\pi} + 1 = 0\\)
 
                         onTextChanged: {
                             // Handle suggestions
+                            const strategySuggestions = Ai.currentApiStrategy?.suggestions(messageInputField.text, root.commandPrefix) ?? null;
                             if (messageInputField.text.length === 0) {
                                 root.suggestionQuery = "";
                                 root.suggestionList = [];
                                 return;
+                            } else if (strategySuggestions) { // The selected model's own commands
+                                root.suggestionList = strategySuggestions;
                             } else if (messageInputField.text.startsWith(`${root.commandPrefix}model`)) {
                                 root.suggestionQuery = messageInputField.text.split(" ")[1] ?? "";
                                 const modelResults = Fuzzy.go(root.suggestionQuery, Ai.modelList.map(model => {
